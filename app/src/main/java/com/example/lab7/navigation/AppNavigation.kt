@@ -9,13 +9,13 @@ import androidx.navigation.navArgument
 import com.example.lab7.screens.PersonDetailScreen
 import com.example.lab7.screens.PersonEditScreen
 import com.example.lab7.screens.PersonListScreen
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lab7.viewmodel.PersonViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val viewModel: PersonViewModel = viewModel()
+    val viewModel: PersonViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,

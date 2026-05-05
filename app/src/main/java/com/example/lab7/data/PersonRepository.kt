@@ -17,7 +17,9 @@ class PersonRepository @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.let { persons ->
                 dao.insertAll(persons.map { it.toEntity() })
-            }
+            } ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Network error: ${response.code()}")
         }
     }
 

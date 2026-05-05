@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.lab7.model.PersonEntity
 import com.example.lab7.viewmodel.PersonViewModel
@@ -22,28 +21,38 @@ import com.example.lab7.viewmodel.PersonViewModel
 @Composable
 fun PersonListScreen(
     navController: NavController,
-    viewModel: PersonViewModel = hiltViewModel()
+    viewModel: PersonViewModel
 ) {
     val persons by viewModel.allPersons.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Persons") })
+            TopAppBar(
+                title = { Text("Persons") },
+                actions = {
+                    TextButton(onClick = { viewModel.refreshData() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Spacer(Modifier.width(4.dp))
+                        Text("Обновить")
+                    }
+                }
+            )
         },
         floatingActionButton = {
-            Row {
-                IconButton(onClick = { viewModel.refreshData() }) {
-                    Icon(Icons.Default.Refresh, "Refresh")
-                }
-                Spacer(Modifier.width(8.dp))
-                IconButton(onClick = { navController.navigate("edit/0") }) {
-                    Icon(Icons.Default.Add, "Add Person")
-                }
+            FloatingActionButton(
+                onClick = { navController.navigate("edit/0") }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Person")
             }
         }
     ) { padding ->
         if (persons.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
                 Text("No data available")
             }
         } else {
@@ -82,7 +91,7 @@ fun PersonListItem(
                 Text(text = person.profession, style = MaterialTheme.typography.bodySmall)
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, "Delete")
+                Icon(Icons.Default.Delete, contentDescription = "Delete")
             }
         }
     }

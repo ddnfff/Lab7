@@ -1,3 +1,4 @@
+// Замените текущий файл на этот
 package com.example.lab7.model
 
 import com.squareup.moshi.Json
@@ -7,13 +8,17 @@ import com.squareup.moshi.JsonClass
 data class PersonDto(
     @Json(name = "id") val id: Int,
     @Json(name = "name") val name: String,
-    @Json(name = "age") val age: Int? = null,  // Делаем nullable
-    @Json(name = "profession") val profession: String? = null
+    @Json(name = "company") val company: CompanyDto? = null
 ) {
     fun toEntity(): PersonEntity = PersonEntity(
         id = id,
         name = name,
-        age = age ?: 0,  // Значение по умолчанию
-        profession = profession ?: ""
+        age = 0, // По умолчанию, так как API не отдает возраст
+        profession = company?.name ?: "Unknown"
     )
 }
+
+@JsonClass(generateAdapter = true)
+data class CompanyDto(
+    @Json(name = "name") val name: String
+)
