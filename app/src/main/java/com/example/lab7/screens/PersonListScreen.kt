@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lab7.components.CenterProgress
 import com.example.lab7.model.PersonEntity
 import com.example.lab7.viewmodel.PersonViewModel
 
@@ -24,6 +25,8 @@ fun PersonListScreen(
     viewModel: PersonViewModel
 ) {
     val persons by viewModel.allPersons.collectAsState(initial = emptyList())
+    val isLoading by viewModel.isListLoading.collectAsState()
+    val error by viewModel.listError.collectAsState()
 
     Scaffold(
         topBar = {
@@ -46,24 +49,66 @@ fun PersonListScreen(
             }
         }
     ) { padding ->
-        if (persons.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No data available")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.padding(padding)) {
-                items(persons) { person ->
-                    PersonListItem(
-                        person = person,
-                        onDelete = { viewModel.deletePerson(person.id) },
-                        onClick = { navController.navigate("detail/${person.id}") }
-                    )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            when {
+                isLoading && persons.isEmpty() -> {
+                    CenterProgress()
                 }
+
+                error != null && persons.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Ошибка: $error",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+
+                persons.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Нет данных")
+                    }
+                }
+
+                else -> {
+                    LazyColumn {
+                        items(persons) { person ->
+                            PersonListItem(
+                                person = person,
+                                onDelete = { viewModel.deletePerson(person.id) },
+                                onClick = { navController.navigate("detail/${person.id}") }
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (isLoading && persons.isNotEmpty()) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                )
+            }
+
+            if (error != null && persons.isNotEmpty()) {
+                Text(
+                    text = "Ошибка: $error",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                )
             }
         }
     }

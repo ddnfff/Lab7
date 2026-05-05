@@ -5,6 +5,7 @@ import com.example.lab7.data.PersonDao
 import com.example.lab7.model.PersonEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import com.example.lab7.model.TodoDto
 
 class PersonRepository @Inject constructor(
     private val api: PersonApi,
@@ -17,9 +18,9 @@ class PersonRepository @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.let { persons ->
                 dao.insertAll(persons.map { it.toEntity() })
-            } ?: throw Exception("Empty response body")
+            } ?: throw Exception("Пустой ответ сервера")
         } else {
-            throw Exception("Network error: ${response.code()}")
+            throw Exception("Ошибка сети: ${response.code()}")
         }
     }
 
@@ -35,11 +36,21 @@ class PersonRepository @Inject constructor(
 
     suspend fun insertAll(persons: List<PersonEntity>) = dao.insertAll(persons)
 
+    suspend fun getTodosByUserId(userId: Int): List<TodoDto> {
+        val response = api.getTodosByUserId(userId)
+        if (response.isSuccessful) {
+            return response.body() ?: emptyList()
+        } else {
+            throw Exception("Network error: ${response.code()}")
+        }
+    }
+
     private suspend fun fetchFromNetwork(id: Int): PersonEntity {
         val response = api.getPersonById(id)
         if (response.isSuccessful) {
-            return response.body()!!.toEntity().also { dao.insert(it) }
+            return response.body()?.toEntity()?.also { dao.insert(it) }
+                ?: throw Exception("Пустой ответ сервера")
         }
-        throw Exception("Network error: ${response.code()}")
+        throw Exception("Ошибка сети: ${response.code()}")
     }
 }

@@ -11,6 +11,7 @@ import com.example.lab7.screens.PersonEditScreen
 import com.example.lab7.screens.PersonListScreen
 import com.example.lab7.viewmodel.PersonViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.lab7.screens.UserTodosScreen
 
 @Composable
 fun AppNavigation() {
@@ -23,6 +24,17 @@ fun AppNavigation() {
     ) {
         composable("list") {
             PersonListScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        composable(
+            route = "todos/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            UserTodosScreen(
+                userId = backStackEntry.arguments?.getInt("userId") ?: 0,
                 navController = navController,
                 viewModel = viewModel
             )
