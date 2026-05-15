@@ -2,7 +2,7 @@ package com.example.lab7.di
 
 import android.content.Context
 import com.example.lab7.data.AppDatabase
-import com.example.lab7.data.ServiceRecordDao
+import com.example.lab7.data.WishDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideServiceRecordDao(database: AppDatabase): ServiceRecordDao {
-        return database.serviceRecordDao()
+    fun provideWishDao(database: AppDatabase): WishDao {
+        return database.wishDao()
     }
 }

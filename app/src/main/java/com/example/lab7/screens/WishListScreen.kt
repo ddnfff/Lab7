@@ -13,8 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -32,30 +32,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lab7.components.CenterProgress
-import com.example.lab7.model.ServiceRecordEntity
-import com.example.lab7.viewmodel.ServiceViewModel
+import com.example.lab7.model.WishEntity
+import com.example.lab7.viewmodel.WishViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceListScreen(
+fun WishListScreen(
     navController: NavController,
-    viewModel: ServiceViewModel
+    viewModel: WishViewModel
 ) {
-    val records by viewModel.allRecords.collectAsState()
+    val wishes by viewModel.allWishes.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Журнал обслуживания") }
+                title = { Text("Вишлист") }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate("edit/0") }
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить запись")
+                Icon(Icons.Default.Add, contentDescription = "Добавить желание")
             }
         }
     ) { padding ->
@@ -65,11 +65,11 @@ fun ServiceListScreen(
                 .padding(padding)
         ) {
             when {
-                isLoading && records.isEmpty() -> {
+                isLoading && wishes.isEmpty() -> {
                     CenterProgress()
                 }
 
-                error != null && records.isEmpty() -> {
+                error != null && wishes.isEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -81,22 +81,25 @@ fun ServiceListScreen(
                     }
                 }
 
-                records.isEmpty() -> {
+                wishes.isEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Записей пока нет")
+                        Text("Список желаний пока пуст")
                     }
                 }
 
                 else -> {
                     LazyColumn {
-                        items(records) { record ->
-                            ServiceListItem(
-                                record = record,
-                                onClick = { navController.navigate("detail/${record.id}") },
-                                onDelete = { viewModel.deleteRecord(record) }
+                        items(
+                            items = wishes,
+                            key = { it.id }
+                        ) { wish ->
+                            WishListItem(
+                                wish = wish,
+                                onClick = { navController.navigate("detail/${wish.id}") },
+                                onDelete = { viewModel.deleteWish(wish) }
                             )
                         }
                     }
@@ -107,8 +110,8 @@ fun ServiceListScreen(
 }
 
 @Composable
-fun ServiceListItem(
-    record: ServiceRecordEntity,
+fun WishListItem(
+    wish: WishEntity,
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -123,25 +126,25 @@ fun ServiceListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.Build,
+                imageVector = Icons.Default.Star,
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = record.serviceType,
+                    text = wish.title,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Дата: ${record.serviceDate}",
+                    text = "Цена: ${wish.price}",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "Пробег: ${record.mileage} км",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Приоритет: ${wish.priority}",
+                    style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "Стоимость: ${record.cost} ₽",
+                    text = if (wish.isPurchased) "Статус: куплено" else "Статус: не куплено",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

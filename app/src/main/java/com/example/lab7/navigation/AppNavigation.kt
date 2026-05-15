@@ -7,47 +7,47 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.lab7.screens.ServiceDetailScreen
-import com.example.lab7.screens.ServiceEditScreen
-import com.example.lab7.screens.ServiceListScreen
-import com.example.lab7.viewmodel.ServiceViewModel
+import com.example.lab7.screens.WishDetailScreen
+import com.example.lab7.screens.WishEditScreen
+import com.example.lab7.screens.WishListScreen
+import com.example.lab7.viewmodel.WishViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val viewModel: ServiceViewModel = hiltViewModel()
+    val viewModel: WishViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
         startDestination = "list"
     ) {
         composable("list") {
-            ServiceListScreen(
+            WishListScreen(
                 navController = navController,
                 viewModel = viewModel
             )
         }
 
         composable(
-            route = "detail/{recordId}",
-            arguments = listOf(navArgument("recordId") { type = NavType.IntType })
+            route = "detail/{wishId}",
+            arguments = listOf(navArgument("wishId") { type = NavType.IntType })
         ) { backStackEntry ->
-            ServiceDetailScreen(
-                recordId = backStackEntry.arguments?.getInt("recordId") ?: 0,
+            WishDetailScreen(
+                wishId = backStackEntry.arguments?.getInt("wishId") ?: 0,
                 navController = navController,
                 viewModel = viewModel
             )
         }
 
         composable(
-            route = "edit/{recordId}",
-            arguments = listOf(navArgument("recordId") {
+            route = "edit/{wishId}",
+            arguments = listOf(navArgument("wishId") {
                 type = NavType.IntType
                 defaultValue = 0
             })
         ) { backStackEntry ->
-            ServiceEditScreen(
-                recordId = backStackEntry.arguments?.getInt("recordId") ?: 0,
+            WishEditScreen(
+                wishId = backStackEntry.arguments?.getInt("wishId") ?: 0,
                 navController = navController,
                 viewModel = viewModel
             )

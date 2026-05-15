@@ -4,23 +4,23 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.lab7.model.ServiceRecordEntity
+import com.example.lab7.model.WishEntity
 
 @Database(
-    entities = [ServiceRecordEntity::class],
+    entities = [WishEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun serviceRecordDao(): ServiceRecordDao
+    abstract fun wishDao(): WishDao
 
     companion object {
         fun create(context: Context): AppDatabase {
             return Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
-                "car-service-db"
+                "wishlist-db"
             ).build()
         }
     }

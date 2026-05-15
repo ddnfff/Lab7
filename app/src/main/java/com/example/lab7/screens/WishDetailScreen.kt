@@ -23,27 +23,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lab7.components.CenterProgress
-import com.example.lab7.viewmodel.ServiceViewModel
+import com.example.lab7.viewmodel.WishViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceDetailScreen(
-    recordId: Int,
+fun WishDetailScreen(
+    wishId: Int,
     navController: NavController,
-    viewModel: ServiceViewModel
+    viewModel: WishViewModel
 ) {
-    val record by viewModel.selectedRecord.collectAsState()
+    val wish by viewModel.selectedWish.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    LaunchedEffect(recordId) {
-        viewModel.loadRecord(recordId)
+    LaunchedEffect(wishId) {
+        viewModel.loadWish(wishId)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(record?.serviceType ?: "Детали записи") },
+                title = { Text(wish?.title ?: "Детали желания") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -53,7 +53,7 @@ fun ServiceDetailScreen(
                     }
                 },
                 actions = {
-                    record?.let {
+                    wish?.let {
                         IconButton(onClick = { navController.navigate("edit/${it.id}") }) {
                             Icon(Icons.Default.Edit, contentDescription = "Редактировать")
                         }
@@ -87,7 +87,7 @@ fun ServiceDetailScreen(
                 }
             }
 
-            record != null -> {
+            wish != null -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -96,14 +96,20 @@ fun ServiceDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = record!!.serviceType,
+                        text = wish!!.title,
                         style = MaterialTheme.typography.headlineSmall
                     )
-                    Text("Дата обслуживания: ${record!!.serviceDate}")
-                    Text("Пробег: ${record!!.mileage} км")
-                    Text("Стоимость: ${record!!.cost} ₽")
-                    Text("Сервис / место: ${record!!.location}")
-                    Text("Заметки: ${record!!.notes}")
+                    Text("Описание: ${wish!!.description}")
+                    Text("Цена: ${wish!!.price}")
+                    Text("Ссылка: ${wish!!.url}")
+                    Text("Приоритет: ${wish!!.priority}")
+                    Text(
+                        text = if (wish!!.isPurchased) {
+                            "Статус: куплено"
+                        } else {
+                            "Статус: не куплено"
+                        }
+                    )
                 }
             }
         }
