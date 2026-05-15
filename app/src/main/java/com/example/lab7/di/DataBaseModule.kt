@@ -2,6 +2,7 @@ package com.example.lab7.di
 
 import android.content.Context
 import com.example.lab7.data.AppDatabase
+import com.example.lab7.data.ServiceRecordDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +13,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -19,5 +21,8 @@ object DatabaseModule {
     }
 
     @Provides
-    fun providePersonDao(database: AppDatabase) = database.personDao()
+    @Singleton
+    fun provideServiceRecordDao(database: AppDatabase): ServiceRecordDao {
+        return database.serviceRecordDao()
+    }
 }
